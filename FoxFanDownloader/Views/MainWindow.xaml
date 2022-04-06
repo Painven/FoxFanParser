@@ -1,0 +1,67 @@
+﻿<Window x:Class="FoxFanDownloader.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FoxFanDownloader"
+        xmlns:vm="clr-namespace:FoxFanDownloader.ViewModels"
+        xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border BorderThickness="0 0 0 1" BorderBrush="Gray" Padding="2">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="2 2 4 2"/>
+                        <Setter Property="Padding" Value="2"/>
+                        <Setter Property="Foreground" Value="Navy"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                    </Style>
+                    <Style TargetType="{x:Type icons:PackIconFontAwesome}">
+                        <Setter Property="Width" Value="22"/>
+                        <Setter Property="Height" Value="22"/>
+                        <Setter Property="Foreground" Value="Navy"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Command="{Binding ToolbarCommand1}">
+                    <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
+                </Button>
+                <Button Command="{Binding ToolbarCommand2}">
+                    <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
+                </Button>
+                <Button Command="{Binding ToolbarCommand3}">
+                    <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
+                </Button>
+            </StackPanel>
+        </Border>
+        
+        <TabControl Grid.Row="1" Margin="2" 
+                    ItemsSource="{Binding Multfilms}"
+                    SelectedValue="{Binding SelectedMultfilm}"
+                    DisplayMemberPath="Name">
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Панель сезонов -->
+                        <local:SeasonDisplayer Grid.Row="0" DataContext="{Binding Seasons}"></local:SeasonDisplayer>
+
+                        <!-- Серии сезона -->
+                        <local:SeriesDisplayer Grid.Row="1" DataContext="{Binding SelectedSeason}"></local:SeriesDisplayer>
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
+</Window>
