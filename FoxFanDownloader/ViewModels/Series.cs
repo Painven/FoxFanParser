@@ -17,6 +17,7 @@ public class Series : ViewModelBase
 {
     public string Title { get; set; }
     public string Image { get; set; }
+    [JsonIgnore]
     public string LocalImage
     {
         get

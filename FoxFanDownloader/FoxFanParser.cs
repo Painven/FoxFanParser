@@ -1,6 +1,8 @@
 ﻿using FoxFanDownloader.ViewModels;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -15,16 +17,16 @@ public class FoxFanParser
     {
         client = new HttpClient();
     }
-    public async Task<Multfilm> Parse()
+    public async Task<Multfilm> Parse(string name, string host, int seasons)
     {
         var mult = new Multfilm();
 
-        mult.Name = "American Dad";
+        mult.Name = name;
         mult.SeasonsInfo = new SeasonsInfo();
 
-        string HOST = "https://americandad.fox-fan.tv/";
+        string HOST = host;
 
-        int total = 18;
+        int total = seasons;
 
 
         for (int current_season = 1; current_season <= total; current_season++)
@@ -49,6 +51,10 @@ public class FoxFanParser
 
             mult.SeasonsInfo.Seasons.Add(season);
         }
-       return mult;
+
+        string jsonName = $"mult_{name.ToLower().Replace(" ", "_")}.json";
+        File.WriteAllText(jsonName, JsonConvert.SerializeObject(mult));
+
+        return mult;
     }
 }

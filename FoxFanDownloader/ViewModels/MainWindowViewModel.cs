@@ -29,7 +29,7 @@ public class MainWindowViewModel : ViewModelBase
     }
     public MainWindowViewModel()
     {
-        ParseMultfimCommand = new LambdaCommand(ParseMultfilm, e => !InProgress);
+        ParseMultfimCommand = new LambdaCommand(ParseMultfilm, e => false);
         LoadedCommand = new LambdaCommand(Loaded, e => !InProgress);
 
         Multfilms = new ObservableCollection<Multfilm>();
@@ -41,8 +41,8 @@ public class MainWindowViewModel : ViewModelBase
     private void Loaded(object obj)
     {
         Multfilms.Clear();
-        string appDir = Path.GetDirectoryName(Application.Current.GetType().Assembly.Location);
-        foreach (var jsonFile in Directory.GetFiles(appDir, "mult*.json")) 
+        string storageDir = Path.GetDirectoryName(Application.Current.GetType().Assembly.Location) + "\\storage";
+        foreach (var jsonFile in Directory.GetFiles(storageDir, "*.json")) 
         {
             Multfilms.Add(JsonConvert.DeserializeObject<Multfilm>(File.ReadAllText(jsonFile)));
         }
@@ -54,9 +54,8 @@ public class MainWindowViewModel : ViewModelBase
         InProgress = true;
         try
         {
-            var newMult = await (new FoxFanParser()).Parse();
-            File.WriteAllText("mult_american_dad.json", JsonConvert.SerializeObject(newMult));
-
+            var newMult = await (new FoxFanParser()).Parse("Cleaveland Show", "https://clevelandshow.fox-fan.tv/", 4);
+            
             Multfilms.Add(newMult);
             SelectedMultfilm = newMult;
             

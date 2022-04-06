@@ -44,8 +44,14 @@
         
         <TabControl Grid.Row="1" Margin="2" 
                     ItemsSource="{Binding Multfilms}"
-                    SelectedValue="{Binding SelectedMultfilm}"
-                    DisplayMemberPath="Name">
+                    SelectedValue="{Binding SelectedMultfilm}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <TextBlock Text="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <Grid>
