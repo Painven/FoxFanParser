@@ -3,10 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:FoxFanDownloader.ViewModels" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              Background="White"
+             d:DataContext="{d:DesignInstance Type=vm:Season, IsDesignTimeCreatable=False}" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <ItemsControl ItemsSource="{Binding SelectedSeason.Series}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                  Background="Gray"
+                  ItemsSource="{Binding Series}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <WrapPanel IsItemsHost="True" />
@@ -14,17 +19,38 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <Border Width="200" Height="150" 
+                        Margin="2"
+                        Cursor="Hand"
+                        BorderThickness="1" BorderBrush="LightGray" CornerRadius="2">
+                    <Grid Margin="4">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDown">
+                                <i:InvokeCommandAction Command="{Binding ClickedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                    <Border Grid.Row="0" Grid.RowSpan="2" Width="100" Height="100">
-                        <Image Source="{Binding Image}"/>
-                    </Border>
-                    <TextBox Grid.Row="0" Text="{Binding Title}" />
-                </Grid>
+
+                        <Image Source="{Binding Image}" Stretch="Fill" Grid.RowSpan="3"/>
+                        
+                        <Label Grid.Row="0" Content="{Binding Number}" FontSize="15" 
+                               HorizontalContentAlignment="Right"
+                               VerticalContentAlignment="Top"
+                               HorizontalAlignment="Right"
+                               Background="#80000000" Foreground="Gold" />
+                        
+                        <Label Grid.Row="2" Content="{Binding Title}" FontSize="13" 
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Bottom"
+                               Background="#80000000" Foreground="White" />
+                    </Grid>
+                </Border>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

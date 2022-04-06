@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace FoxFanDownloader.ViewModels;
@@ -11,30 +11,85 @@ namespace FoxFanDownloader.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     public ObservableCollection<Multfilm> Multfilms { get; set; }
-    public Multfilm SelectedMultfilm { get; set; }
-    public ICommand ToolbarCommand1 { get; }
+
+    Multfilm selectedMultfilm;
+    public Multfilm SelectedMultfilm
+    {
+        get => selectedMultfilm;
+        set => Set(ref selectedMultfilm, value);
+    }
+    public ICommand ParseMultfimCommand { get; }
+    public ICommand LoadedCommand { get; }
+
+    bool inProgress;
+    public bool InProgress
+    {
+        get => inProgress;
+        set => Set(ref inProgress, value);
+    }
     public MainWindowViewModel()
     {
+        ParseMultfimCommand = new LambdaCommand(ParseMultfilm, e => !InProgress);
+        LoadedCommand = new LambdaCommand(Loaded, e => !InProgress);
+
         Multfilms = new ObservableCollection<Multfilm>();
+        
+        AddTestItems();
+    }
+
+    private void Loaded(object obj)
+    {
+        Multfilms.Clear();
+        string appDir = Path.GetDirectoryName(Application.Current.GetType().Assembly.Location);
+        foreach (var jsonFile in Directory.GetFiles(appDir, "mult*.json")) 
+        {
+            Multfilms.Add(JsonConvert.DeserializeObject<Multfilm>(File.ReadAllText(jsonFile)));
+        }
+        SelectedMultfilm = Multfilms.FirstOrDefault();
+    }
+
+    private async void ParseMultfilm(object obj)
+    {
+        InProgress = true;
+        try
+        {
+            var newMult = await (new FoxFanParser()).Parse();
+            File.WriteAllText("mult_american_dad.json", JsonConvert.SerializeObject(newMult));
+
+            Multfilms.Add(newMult);
+            SelectedMultfilm = newMult;
+            
+        }
+        catch(Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            InProgress = false;
+        }
+    }
+
+    private void AddTestItems()
+    {
         var americanDad = new Multfilm()
         {
             Name = "American Dad",
-            Seasons = new List<Season>(Enumerable.Range(1, 18).Select(n => new Season() { Number = n }))
+            SeasonsInfo = new SeasonsInfo()
+            {
+                Seasons = new ObservableCollection<Season>(Enumerable.Range(1, 18).Select(n => new Season() { Number = (18 + 1 - n).ToString() }))
+            }
         };
         Multfilms.Add(americanDad);
+        var familyGuy = new Multfilm()
+        {
+            Name = "Family Guy",
+            SeasonsInfo = new SeasonsInfo()
+            {
+                Seasons = new ObservableCollection<Season>(Enumerable.Range(1, 4).Select(n => new Season() { Number = (4 + 1 - n).ToString() }))
+            }
+        };
+        Multfilms.Add(familyGuy);
         SelectedMultfilm = Multfilms.First();
-        ToolbarCommand1 = new LambdaCommand(e => { }, e => true);
     }
-}
-
-public class Multfilm : ViewModelBase
-{
-    public List<Season> Seasons { get; set; }
-    public Season SelectedSeason { get; set; }
-    public string Name { get; set; }
-}
-
-public class Season
-{
-    public int Number { get; set; }
 }

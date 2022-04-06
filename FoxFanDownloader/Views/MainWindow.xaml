@@ -6,9 +6,15 @@
         xmlns:local="clr-namespace:FoxFanDownloader"
         xmlns:vm="clr-namespace:FoxFanDownloader.ViewModels"
         xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
         Title="MainWindow" Height="450" Width="800">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -30,13 +36,7 @@
                         <Setter Property="Foreground" Value="Navy"/>
                     </Style>
                 </StackPanel.Resources>
-                <Button Command="{Binding ToolbarCommand1}">
-                    <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
-                </Button>
-                <Button Command="{Binding ToolbarCommand2}">
-                    <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
-                </Button>
-                <Button Command="{Binding ToolbarCommand3}">
+                <Button Command="{Binding ParseMultfimCommand}">
                     <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
                 </Button>
             </StackPanel>
@@ -55,10 +55,10 @@
                         </Grid.RowDefinitions>
 
                         <!-- Панель сезонов -->
-                        <local:SeasonDisplayer Grid.Row="0" DataContext="{Binding Seasons}"></local:SeasonDisplayer>
+                        <local:SeasonDisplayer Grid.Row="0" DataContext="{Binding SeasonsInfo}"></local:SeasonDisplayer>
 
                         <!-- Серии сезона -->
-                        <local:SeriesDisplayer Grid.Row="1" DataContext="{Binding SelectedSeason}"></local:SeriesDisplayer>
+                        <local:SeriesDisplayer Grid.Row="1" DataContext="{Binding SeasonsInfo.SelectedSeason}"></local:SeriesDisplayer>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
