@@ -37,6 +37,7 @@ public class MainWindowViewModel : ViewModelBase
         AddTestItems();
     }
 
+
     private void Loaded(object obj)
     {
         Multfilms.Clear();

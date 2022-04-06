@@ -26,7 +26,7 @@
                     <Grid Margin="4">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDown">
-                                <i:InvokeCommandAction Command="{Binding ClickedCommand}"/>
+                                <i:InvokeCommandAction Command="{Binding OpenSourceVideoCommand}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         
@@ -37,7 +37,7 @@
                         </Grid.RowDefinitions>
 
 
-                        <Image Source="{Binding Image}" Stretch="Fill" Grid.RowSpan="3"/>
+                        <Image Source="{Binding LocalImage}" Stretch="Fill" Grid.RowSpan="3"/>
                         
                         <Label Grid.Row="0" Content="{Binding Number}" FontSize="15" 
                                HorizontalContentAlignment="Right"
