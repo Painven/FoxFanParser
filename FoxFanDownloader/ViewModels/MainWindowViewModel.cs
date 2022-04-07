@@ -10,6 +10,8 @@ namespace FoxFanDownloader.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    private readonly ISettingsStorage settingsStorage;
+    private SettingsRoot settings;
     public ObservableCollection<Multfilm> Multfilms { get; set; }
 
     Multfilm selectedMultfilm;
@@ -22,19 +24,23 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand LoadedCommand { get; }
 
     bool inProgress;
+    
+
     public bool InProgress
     {
         get => inProgress;
         set => Set(ref inProgress, value);
     }
-    public MainWindowViewModel()
+    public MainWindowViewModel(ISettingsStorage settingsStorage)
     {
+        
         ParseMultfimCommand = new LambdaCommand(ParseMultfilm, e => false);
         LoadedCommand = new LambdaCommand(Loaded, e => !InProgress);
 
         Multfilms = new ObservableCollection<Multfilm>();
         
         AddTestItems();
+        this.settingsStorage = settingsStorage;
     }
 
 
@@ -46,7 +52,13 @@ public class MainWindowViewModel : ViewModelBase
         {
             Multfilms.Add(JsonConvert.DeserializeObject<Multfilm>(File.ReadAllText(jsonFile)));
         }
-        SelectedMultfilm = Multfilms.FirstOrDefault();
+
+        settings = settingsStorage.GetSettings();
+        SelectedMultfilm = Multfilms.FirstOrDefault(m => m.Name == settings.SelectedMultfilmName);
+        if (selectedMultfilm?.SeasonsInfo != null)
+        {
+            selectedMultfilm.SeasonsInfo.SelectedSeason = selectedMultfilm.SeasonsInfo.Seasons?.FirstOrDefault(s => s.Number == settings.SelectedSeasonNumber);
+        }
     }
 
     private async void ParseMultfilm(object obj)

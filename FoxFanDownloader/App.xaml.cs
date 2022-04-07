@@ -7,11 +7,27 @@ namespace FoxFanDownloader;
 /// </summary>
 public partial class App : Application
 {
+    ISettingsStorage settingsStorage;
+    MainWindowViewModel mainWindowViewModel;
     protected override void OnStartup(StartupEventArgs e)
     {
-        MainWindowViewModel mainWindowViewModel = new();
+        settingsStorage = new JsonSettingsStorage("settings.json");
+        mainWindowViewModel = new(settingsStorage);
         Window mainWindow = new MainWindow();
         mainWindow.DataContext = mainWindowViewModel;
         mainWindow.Show();
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        SaveSettings();
+    }
+
+    private void SaveSettings()
+    {
+        var settingsRoot = new SettingsRoot();
+        settingsRoot.SelectedMultfilmName = mainWindowViewModel.SelectedMultfilm?.Name ?? string.Empty;
+        settingsRoot.SelectedSeasonNumber = mainWindowViewModel.SelectedMultfilm?.SeasonsInfo?.SelectedSeason?.Number ?? string.Empty;
+        settingsStorage.SaveSettings(settingsRoot);
     }
 }
