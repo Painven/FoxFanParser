@@ -11,8 +11,16 @@ namespace FoxFanDownloader.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private readonly ISettingsStorage settingsStorage;
+    private readonly FoxFanParser parser;
     private SettingsRoot settings;
     public ObservableCollection<Multfilm> Multfilms { get; set; }
+
+    bool isOneLineSubtitles;
+    public bool IsOneLineSubtitles
+    {
+        get => isOneLineSubtitles;
+        set => Set(ref isOneLineSubtitles, value);
+    }
 
     Multfilm selectedMultfilm;
     public Multfilm SelectedMultfilm
@@ -25,25 +33,19 @@ public class MainWindowViewModel : ViewModelBase
 
     bool inProgress;
     
-
     public bool InProgress
     {
         get => inProgress;
         set => Set(ref inProgress, value);
     }
-    public MainWindowViewModel(ISettingsStorage settingsStorage)
-    {
-        
+    public MainWindowViewModel(ISettingsStorage settingsStorage, FoxFanParser parser)
+    {     
         ParseMultfimCommand = new LambdaCommand(ParseMultfilm, e => false);
         LoadedCommand = new LambdaCommand(Loaded, e => !InProgress);
-
-        Multfilms = new ObservableCollection<Multfilm>();
-        
-        AddTestItems();
+        Multfilms = new ObservableCollection<Multfilm>();      
         this.settingsStorage = settingsStorage;
+        this.parser = parser;
     }
-
-
     private void Loaded(object obj)
     {
         Multfilms.Clear();
@@ -55,18 +57,29 @@ public class MainWindowViewModel : ViewModelBase
 
         settings = settingsStorage.GetSettings();
         SelectedMultfilm = Multfilms.FirstOrDefault(m => m.Name == settings.SelectedMultfilmName);
+        IsOneLineSubtitles = settings.IsOneLineSubtitles;
         if (selectedMultfilm?.SeasonsInfo != null)
         {
             selectedMultfilm.SeasonsInfo.SelectedSeason = selectedMultfilm.SeasonsInfo.Seasons?.FirstOrDefault(s => s.Number == settings.SelectedSeasonNumber);
         }
-    }
 
+        foreach(var m in Multfilms)
+        {
+            foreach(var season in m.SeasonsInfo.Seasons)
+            {
+                foreach(var series in season.Series)
+                {
+                    series.OpenVideoClicked += async (e) => VLC_Helper.OpenVideo(await parser.GetSourceVideoFromUri(e.Uri), IsOneLineSubtitles);
+                }
+            }
+        }
+    }
     private async void ParseMultfilm(object obj)
     {
         InProgress = true;
         try
         {
-            var newMult = await (new FoxFanParser()).Parse("Cleaveland Show", "https://clevelandshow.fox-fan.tv/", 4);
+            var newMult = await parser.Parse("Cleaveland Show", "https://clevelandshow.fox-fan.tv/", 4);
             
             Multfilms.Add(newMult);
             SelectedMultfilm = newMult;
@@ -80,28 +93,5 @@ public class MainWindowViewModel : ViewModelBase
         {
             InProgress = false;
         }
-    }
-
-    private void AddTestItems()
-    {
-        var americanDad = new Multfilm()
-        {
-            Name = "American Dad",
-            SeasonsInfo = new SeasonsInfo()
-            {
-                Seasons = new ObservableCollection<Season>(Enumerable.Range(1, 18).Select(n => new Season() { Number = (18 + 1 - n).ToString() }))
-            }
-        };
-        Multfilms.Add(americanDad);
-        var familyGuy = new Multfilm()
-        {
-            Name = "Family Guy",
-            SeasonsInfo = new SeasonsInfo()
-            {
-                Seasons = new ObservableCollection<Season>(Enumerable.Range(1, 4).Select(n => new Season() { Number = (4 + 1 - n).ToString() }))
-            }
-        };
-        Multfilms.Add(familyGuy);
-        SelectedMultfilm = Multfilms.First();
     }
 }

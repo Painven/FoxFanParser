@@ -11,8 +11,10 @@ public partial class App : Application
     MainWindowViewModel mainWindowViewModel;
     protected override void OnStartup(StartupEventArgs e)
     {
+        FoxFanParser parser = new FoxFanParser();
         settingsStorage = new JsonSettingsStorage("settings.json");
-        mainWindowViewModel = new(settingsStorage);
+        
+        mainWindowViewModel = new(settingsStorage, parser);
         Window mainWindow = new MainWindow();
         mainWindow.DataContext = mainWindowViewModel;
         mainWindow.Show();
@@ -28,6 +30,7 @@ public partial class App : Application
         var settingsRoot = new SettingsRoot();
         settingsRoot.SelectedMultfilmName = mainWindowViewModel.SelectedMultfilm?.Name ?? string.Empty;
         settingsRoot.SelectedSeasonNumber = mainWindowViewModel.SelectedMultfilm?.SeasonsInfo?.SelectedSeason?.Number ?? string.Empty;
+        settingsRoot.IsOneLineSubtitles = mainWindowViewModel.IsOneLineSubtitles;
         settingsStorage.SaveSettings(settingsRoot);
     }
 }

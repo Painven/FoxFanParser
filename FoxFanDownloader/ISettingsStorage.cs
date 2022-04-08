@@ -39,5 +39,6 @@ public class SettingsRoot
 {
     public string SelectedMultfilmName { get; set; }
     public string SelectedSeasonNumber { get; set; }
+    public bool IsOneLineSubtitles { get; set; }
 }
 

@@ -37,8 +37,12 @@
                     </Style>
                 </StackPanel.Resources>
                 <Button Command="{Binding ParseMultfimCommand}">
-                    <icons:PackIconFontAwesome Kind="GalacticRepublicBrands"/>
+                    <icons:PackIconFontAwesome Kind="SpiderSolid"/>
                 </Button>
+                <CheckBox Margin="4 2 2 2" 
+                          Content="Однострочные субтитры" 
+                          IsChecked="{Binding IsOneLineSubtitles}" 
+                          VerticalAlignment="Center"/>
             </StackPanel>
         </Border>
         
