@@ -9,7 +9,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="574" Width="1138">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
@@ -45,7 +45,7 @@
                           VerticalAlignment="Center"/>
             </StackPanel>
         </Border>
-        
+
         <TabControl Grid.Row="1" Margin="2" 
                     ItemsSource="{Binding Multfilms}"
                     SelectedValue="{Binding SelectedMultfilm}">
