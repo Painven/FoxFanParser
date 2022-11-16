@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace FoxFanDownloader.ViewModels;
 
@@ -14,10 +15,12 @@ public abstract class ViewModelBase : INotifyPropertyChanged
 
     protected bool Set<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        if (Equals(field, value)) return false;
+        if (Equals(field, value)) 
+            return false;
+
         field = value;
         RaisePropertyChanged(propertyName);
-
+        CommandManager.InvalidateRequerySuggested();
         return true;
     }
 }

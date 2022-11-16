@@ -111,30 +111,24 @@ public class MainWindowViewModel : ViewModelBase
         {
             InProgress = false;
             cartoon.SeasonsInfo.IsRefreshInProgress = false;
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 
     private async Task CheckUpdatesForAllCatoons()
     {
         InProgress = true;
-        var cartoonsWithUpdates = new List<string>();
 
-        foreach(var cartoon in Cartoons)
-        {
-            var hasNewSeries = await updatesChecker.CheckUpdatesAndSave(cartoon);
-            if (hasNewSeries)
-            {
-                cartoonsWithUpdates.Add(cartoon.Name);
-            }
-        }
+        var tasks = Cartoons.Select(c => updatesChecker.CheckUpdatesAndSave(c)).ToArray();
+        var updateResults = await Task.WhenAll(tasks);
+        var cartoonsWithUpdates = Cartoons.Where((c, index) => updateResults[index]).Select(c => c.Name).ToArray();
 
-        if (cartoonsWithUpdates.Any())
+        if (cartoonsWithUpdates.Length > 1)
         {
-            string msg = cartoonsWithUpdates.Count == 1 ?
-                $"Найдены новые серии у сериала '{cartoonsWithUpdates[0]}'" :
-                $"Найдены новые серии для сериалов {string.Join(", ", cartoonsWithUpdates)}";
-            toasts.ShowSuccess(msg);
+            toasts.ShowSuccess($"Найдены новые серии для сериалов {string.Join(", ", cartoonsWithUpdates)}");           
+        } 
+        else if(cartoonsWithUpdates.Length == 1)
+        {
+            toasts.ShowSuccess($"Найдены новые серии у сериала '{cartoonsWithUpdates[0]}'");
         }
         else
         {
