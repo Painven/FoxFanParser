@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:FoxFanDownloader.ViewModels" 
+             xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks" 
              mc:Ignorable="d"   
              BorderBrush="Transparent"
              d:DataContext="{d:DesignInstance Type=vm:SeasonsInfo, IsDesignTimeCreatable=False}"
@@ -17,7 +18,10 @@
                 <Setter Property="FontWeight" Value="Bold"/>
             </Style>
         </StackPanel.Resources>
-        
+        <Button Command="{Binding RefreshSeasonsCommand}">
+            <icons:PackIconFontAwesome Kind="ArrowAltCircleDownRegular"/>
+        </Button>
+       
         <Label Content="Сезоны" Foreground="Red"/>
 
         <ListBox ItemsSource="{Binding Seasons}" 

@@ -10,6 +10,8 @@ namespace FoxFanDownloader;
 
 public static class VLC_Helper
 {
+    
+
     public static async Task OpenVideo(PlayerJsonRoot data, bool transformSubtitlesToOneLine)
     {
         if (data == null) { return; }

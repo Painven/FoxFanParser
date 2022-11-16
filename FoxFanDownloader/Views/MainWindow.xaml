@@ -9,7 +9,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
-        Title="MainWindow" Height="574" Width="1138">
+        Title="FoxFan парсер" Height="604" Width="1047">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
@@ -22,32 +22,17 @@
         </Grid.RowDefinitions>
         <Border BorderThickness="0 0 0 1" BorderBrush="Gray" Padding="2">
             <StackPanel Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Margin" Value="2 2 4 2"/>
-                        <Setter Property="Padding" Value="2"/>
-                        <Setter Property="Foreground" Value="Navy"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                    </Style>
-                    <Style TargetType="{x:Type icons:PackIconFontAwesome}">
-                        <Setter Property="Width" Value="22"/>
-                        <Setter Property="Height" Value="22"/>
-                        <Setter Property="Foreground" Value="Navy"/>
-                    </Style>
-                </StackPanel.Resources>
-                <Button Command="{Binding ParseMultfimCommand}">
-                    <icons:PackIconFontAwesome Kind="SpiderSolid"/>
+                <Button Command="{Binding AddNewCartoonCommand}">
+                    <icons:PackIconFontAwesome Kind="PlusSolid"/>
                 </Button>
-                <CheckBox Margin="4 2 2 2" 
-                          Content="Однострочные субтитры" 
-                          IsChecked="{Binding IsOneLineSubtitles}" 
-                          VerticalAlignment="Center"/>
+                <Button Command="{Binding CheckUpdatesForAllCatoonsCommand}">
+                    <icons:PackIconFontAwesome Kind="ArrowAltCircleDownRegular"/>
+                </Button>
             </StackPanel>
         </Border>
 
         <TabControl Grid.Row="1" Margin="2" 
-                    ItemsSource="{Binding Multfilms}"
+                    ItemsSource="{Binding Cartoons}"
                     SelectedValue="{Binding SelectedMultfilm}">
             <TabControl.ItemTemplate>
                 <DataTemplate>

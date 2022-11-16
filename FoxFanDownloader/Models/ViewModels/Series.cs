@@ -18,7 +18,6 @@ public class Series : ViewModelBase
     public event Action<Series> OpenVideoClicked;
     public string Title { get; set; }
     public string Image { get; set; }
-    [JsonIgnore]
     public string LocalImage
     {
         get
@@ -39,6 +38,7 @@ public class Series : ViewModelBase
     public string Uri { get; set; }
     public string Number { get; set; }
     public ICommand OpenSourceVideoCommand { get; }
+    
     public Series()
     {
         OpenSourceVideoCommand = new LambdaCommand(e => OpenVideoClicked?.Invoke(this), e => !string.IsNullOrWhiteSpace(Uri));
