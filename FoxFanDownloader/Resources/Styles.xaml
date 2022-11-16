@@ -5,7 +5,9 @@
         <Setter Property="Margin" Value="2 2 4 2"/>
         <Setter Property="Padding" Value="2"/>
         <Setter Property="Background" Value="#FFF7DDE7"/>
+        <Setter Property="Foreground" Value="Navy"/>
         <Setter Property="BorderBrush" Value="#FF8D8D8D"/>
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -15,7 +17,7 @@
                             BorderThickness="1"
                             CornerRadius="4"
                             Padding="6">
-                        <ContentPresenter />
+                        <ContentPresenter x:Name="contentIcon" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
@@ -23,7 +25,8 @@
                         </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#4574E1"/>
+                            <Setter TargetName="border" Property="Background" Value="Navy"/>
+                            <Setter Property="Foreground" Value="#FFF7DDE7"/>
                         </Trigger>
 
                         <Trigger Property="IsPressed" Value="True">
@@ -34,9 +37,14 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type icons:PackIconFontAwesome}" x:Key="SmallIcon">
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="Height" Value="24"/>
+    </Style>
     <Style TargetType="{x:Type icons:PackIconFontAwesome}">
         <Setter Property="Width" Value="38"/>
         <Setter Property="Height" Value="38"/>
-        <Setter Property="Foreground" Value="#515177"/>
+        
     </Style>
+    
 </ResourceDictionary>

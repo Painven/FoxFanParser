@@ -19,7 +19,7 @@
             </Style>
         </StackPanel.Resources>
         <Button Command="{Binding RefreshSeasonsCommand}">
-            <icons:PackIconFontAwesome Kind="ArrowAltCircleDownRegular"/>
+            <icons:PackIconFontAwesome Kind="ArrowAltCircleDownRegular" Style="{StaticResource SmallIcon}"/>
         </Button>
        
         <Label Content="Сезоны" Foreground="Red"/>

@@ -22,7 +22,8 @@
                 <Border Width="200" Height="150" 
                         Margin="2"
                         Cursor="Hand"
-                        BorderThickness="1" BorderBrush="LightGray" CornerRadius="2">
+                        x:Name="itemBorder"
+                        BorderThickness="2" BorderBrush="LightGray" CornerRadius="2">
                     <Grid Margin="4">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDown">
@@ -51,6 +52,11 @@
                                Background="#80000000" Foreground="White" />
                     </Grid>
                 </Border>
+                <DataTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="itemBorder" Property="BorderBrush" Value="Yellow"/>
+                    </Trigger>
+                </DataTemplate.Triggers>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>
