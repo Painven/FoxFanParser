@@ -4,9 +4,9 @@
     <Style TargetType="Button">
         <Setter Property="Margin" Value="2 2 4 2"/>
         <Setter Property="Padding" Value="2"/>
-        <Setter Property="Background" Value="#FFF7DDE7"/>
+        <Setter Property="Background" Value="#68DEDE55"/>
         <Setter Property="Foreground" Value="Navy"/>
-        <Setter Property="BorderBrush" Value="#FF8D8D8D"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>

@@ -6,11 +6,12 @@
              xmlns:vm="clr-namespace:FoxFanDownloader.ViewModels" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
-             Background="White"
+             Background="Transparent"
              d:DataContext="{d:DesignInstance Type=vm:Season, IsDesignTimeCreatable=False}" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                  Background="Gray"
+    <ItemsControl HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  Background="Transparent"
                   ItemsSource="{Binding Series}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

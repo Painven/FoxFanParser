@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\cartoon-texture-1.jpg" />
     <None Remove="Assets\ff-texture-2.jpg" />
   </ItemGroup>
 
@@ -22,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\cartoon-texture-1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\ff-texture-2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

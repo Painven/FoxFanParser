@@ -8,7 +8,7 @@
              mc:Ignorable="d"   
              BorderBrush="Transparent"
              d:DataContext="{d:DesignInstance Type=vm:SeasonsInfo, IsDesignTimeCreatable=False}"
-             Background="White" d:DesignWidth="400">
+             Background="Transparent" d:DesignWidth="400">
     <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <StackPanel.Resources>
             <Style TargetType="Label">
@@ -22,10 +22,11 @@
             <icons:PackIconFontAwesome Kind="ArrowAltCircleDownRegular" Style="{StaticResource SmallIcon}"/>
         </Button>
        
-        <Label Content="Сезоны" Foreground="Red"/>
+        <Label Content="Сезоны" Foreground="#546AB3"/>
 
         <ListBox ItemsSource="{Binding Seasons}" 
                  BorderThickness="0"
+                 Background="Transparent"
                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
                  SelectedValue="{Binding SelectedSeason}">
             <ItemsControl.ItemsPanel>

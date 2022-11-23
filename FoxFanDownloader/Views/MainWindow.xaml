@@ -11,7 +11,9 @@
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
         Title="FoxFan парсер" Height="604" Width="1047">
     <Window.Background>
-        <ImageBrush ImageSource="/Assets/ff-texture-2.jpg" />
+        <ImageBrush ImageSource="/Assets/cartoon-texture-1.jpg" TileMode="Tile" 
+                    Viewport="0,0,150,150"
+                    ViewportUnits="Absolute" />
     </Window.Background>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -21,13 +23,15 @@
     
     <Grid>
         <Grid.Background>
-            <SolidColorBrush Color="White" Opacity="0.9"/>
+            <SolidColorBrush Color="White" Opacity="0.7"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border BorderThickness="0 0 0 1" BorderBrush="Gray" Padding="2">
+        <Border BorderBrush="Gray" 
+                Background="#887F4FFF"
+                Padding="2">
             <StackPanel Orientation="Horizontal">
                 <Button Command="{Binding AddNewCartoonCommand}">
                     <icons:PackIconFontAwesome Kind="PlusSolid"/>
@@ -39,7 +43,7 @@
         </Border>
 
         <TabControl Grid.Row="1" Margin="2" 
-                    Background="Transparent"
+                    Background="#5DC1C353"
                     ItemsSource="{Binding Cartoons}"
                     SelectedValue="{Binding SelectedMultfilm}">
             <TabControl.ItemTemplate>
