@@ -10,12 +10,19 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
         Title="FoxFan парсер" Height="604" Width="1047">
+    <Window.Background>
+        <ImageBrush ImageSource="/Assets/ff-texture-2.jpg" />
+    </Window.Background>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    
     <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="White" Opacity="0.9"/>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -32,6 +39,7 @@
         </Border>
 
         <TabControl Grid.Row="1" Margin="2" 
+                    Background="Transparent"
                     ItemsSource="{Binding Cartoons}"
                     SelectedValue="{Binding SelectedMultfilm}">
             <TabControl.ItemTemplate>
