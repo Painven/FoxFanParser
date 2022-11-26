@@ -20,7 +20,12 @@ public class MainWindowViewModel : ViewModelBase
     private readonly CartoonUpdatesChecker updatesChecker;
     private readonly Notifier toasts;
     private readonly FoxFanParser parser;
-    public ObservableCollection<Cartoon> Cartoons { get; set; }
+    public ObservableCollection<Cartoon> Cartoons { get; } = new ObservableCollection<Cartoon>()
+    {
+        new Cartoon() {Name = "Family Guy"},
+        new Cartoon() {Name = "South Park"},
+        new Cartoon() {Name = "Other"},
+    };
 
     bool isOneLineSubtitles;
     public bool IsOneLineSubtitles
@@ -63,7 +68,6 @@ public class MainWindowViewModel : ViewModelBase
         AddNewCartoonCommand = new LambdaCommand(AddNewCartoon, e => !InProgress);
         LoadedCommand = new LambdaCommand(async e => await Loaded());
         CheckUpdatesForAllCatoonsCommand = new LambdaCommand(async e => await CheckUpdatesForAllCatoons(), e => !InProgress);
-        Cartoons = new ObservableCollection<Cartoon>();
     }
 
     private async Task Loaded(string activeCartoonName = null)
