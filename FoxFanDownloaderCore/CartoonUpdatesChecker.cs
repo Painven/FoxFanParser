@@ -1,8 +1,4 @@
-﻿using FoxFanDownloader.ViewModels;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace FoxFanDownloader.Models;
+﻿namespace FoxFanDownloaderCore;
 
 public class CartoonUpdatesChecker
 {
@@ -15,7 +11,7 @@ public class CartoonUpdatesChecker
         this.settingsStorage = settingsStorage;
     }
 
-    public async Task<bool> CheckUpdatesAndSave(Cartoon cartoon)
+    public async Task<bool> CheckUpdatesAndSave(CartoonModel cartoon)
     {
         bool hasUpdates = false;
 
@@ -26,17 +22,18 @@ public class CartoonUpdatesChecker
             // has updates - new season
             for (int i = (lastCurrentSeasonNumber + 1); i <= lastServerSeasonNumber; i++)
             {
-                Season newSeason = await parser.ParseSeason(cartoon.Uri, i);
+                SeasonModel newSeason = await parser.ParseSeason(cartoon.Uri, i);
                 cartoon.SeasonsInfo.Seasons.Insert(0, newSeason);
             }
             hasUpdates = true;
         }
-        else if(lastServerSeasonNumber == lastCurrentSeasonNumber)
+        else if (lastServerSeasonNumber == lastCurrentSeasonNumber)
         {
-            Season lastServerSeason = await parser.ParseSeason(cartoon.Uri, lastCurrentSeasonNumber);
-            Season lastLocalSeason = cartoon.SeasonsInfo.Seasons.OrderByDescending(s => int.Parse(s.Number)).FirstOrDefault();
+            SeasonModel lastServerSeason = await parser.ParseSeason(cartoon.Uri, lastCurrentSeasonNumber);
+            SeasonModel lastLocalSeason = cartoon.SeasonsInfo.Seasons.OrderByDescending(s => int.Parse(s.Number))
+                .FirstOrDefault();
 
-            if (lastLocalSeason != null && lastServerSeason.Series.Count > lastLocalSeason.Series.Count)
+            if (lastLocalSeason != null && lastServerSeason.Series.Count() > lastLocalSeason.Series.Count())
             {
                 // has updates - new series
                 cartoon.SeasonsInfo.Seasons.Remove(lastLocalSeason);
@@ -52,5 +49,17 @@ public class CartoonUpdatesChecker
         }
 
         return hasUpdates;
+    }
+
+    public async Task<string[]> CheckUpdatesAndSave(IEnumerable<CartoonModel> cartoons)
+    {
+        var tasks = cartoons.Select(c => CheckUpdatesAndSave(c)).ToArray();
+
+        bool[] updateResults = await Task.WhenAll(tasks);
+
+        var cartoonsWithUpdates = cartoons
+            .Where((c, index) => updateResults[index]).Select(c => c.Name)
+            .ToArray();
+        return cartoonsWithUpdates;
     }
 }

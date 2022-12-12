@@ -27,6 +27,8 @@
         <ListBox ItemsSource="{Binding Seasons}" 
                  BorderThickness="0"
                  Background="Transparent"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Center"
                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
                  SelectedValue="{Binding SelectedSeason}">
             <ItemsControl.ItemsPanel>
@@ -36,7 +38,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Label Content="{Binding Number}" Foreground="Navy"/>
+                    <Label Content="{Binding Number}" Foreground="Navy" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ListBox>

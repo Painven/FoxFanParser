@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FoxFanDownloader.ViewModels;
+using FoxFanDownloaderCore;
 
 namespace FoxFanDownloader.AutoMapper;
 
@@ -7,16 +8,16 @@ public class CartoonMapperProfile : Profile
 {
     public CartoonMapperProfile()
     {
-        this.CreateMap<CartoonDto, Cartoon>();
-        this.CreateMap<Cartoon, CartoonDto>();
+        this.CreateMap<CartoonModel, Cartoon>();
+        this.CreateMap<Cartoon, CartoonModel>();
 
-        this.CreateMap<SeasonsInfoDto, SeasonsInfo>();
-        this.CreateMap<SeasonsInfo, SeasonsInfoDto>();
+        this.CreateMap<SeasonsInfoModel, SeasonsInfo>();
+        this.CreateMap<SeasonsInfo, SeasonsInfoModel>();
 
-        this.CreateMap<SeasonDto, Season>();
-        this.CreateMap<Season, SeasonDto>();
+        this.CreateMap<SeasonModel, Season>();
+        this.CreateMap<Season, SeasonModel>();
 
-        this.CreateMap<SeriesDto, Series>();
-        this.CreateMap<Series, SeriesDto>();
+        this.CreateMap<SeriesModel, Series>();
+        this.CreateMap<Series, SeriesModel>();
     }
 }

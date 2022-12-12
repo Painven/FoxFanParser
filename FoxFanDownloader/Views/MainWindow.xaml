@@ -11,9 +11,7 @@
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}" 
         Title="FoxFan парсер" Height="604" Width="1047">
     <Window.Background>
-        <ImageBrush ImageSource="/Assets/cartoon-texture-1.jpg" TileMode="Tile" 
-                    Viewport="0,0,150,150"
-                    ViewportUnits="Absolute" />
+        <ImageBrush ImageSource="/Assets/bg-texture-original-opacity85.jpg"  />
     </Window.Background>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -23,14 +21,14 @@
     
     <Grid>
         <Grid.Background>
-            <SolidColorBrush Color="White" Opacity="0.7"/>
+            <SolidColorBrush Color="Black" Opacity="0.25"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Border BorderBrush="Gray" 
-                Background="#887F4FFF"
+                Background="#FFDC9A9E"
                 Padding="2">
             <StackPanel Orientation="Horizontal">
                 <Button Command="{Binding AddNewCartoonCommand}">

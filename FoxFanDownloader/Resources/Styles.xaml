@@ -13,7 +13,7 @@
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border x:Name="border" Margin="{TemplateBinding Margin}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            Background="{TemplateBinding Background}"
+                            Background="Transparent"
                             BorderThickness="1"
                             CornerRadius="4"
                             Padding="6">

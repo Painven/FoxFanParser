@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using FoxFanDownloader.AutoMapper;
-using FoxFanDownloader.Models;
 using FoxFanDownloader.ViewModels;
+using FoxFanDownloaderCore;
 using System;
+using System.IO;
 using System.Windows;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
@@ -32,16 +32,18 @@ public partial class App : Application
             cfg.Dispatcher = Application.Current.Dispatcher;
         });
 
-        MapperConfiguration config = new MapperConfiguration(cfg => {
+        MapperConfiguration config = new MapperConfiguration(cfg =>
+        {
             cfg.AddMaps(typeof(App).Assembly);
         });
-        IMapper mapper = new Mapper(config); 
+        IMapper mapper = new Mapper(config);
 
-        ISettingsStorage settingsStorage = new JsonSettingsStorage(mapper);
+        string jsonStoreFilesFolder = Path.GetDirectoryName(Application.Current.GetType().Assembly.Location) + "\\storage";
+        ISettingsStorage settingsStorage = new JsonSettingsStorage(jsonStoreFilesFolder);
         FoxFanParser parser = new FoxFanParser();
         CartoonUpdatesChecker updatesChecker = new CartoonUpdatesChecker(parser, settingsStorage);
 
-        MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(parser, settingsStorage, updatesChecker, toasts);
+        MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(parser, settingsStorage, mapper, updatesChecker, toasts);
 
         Window mainWindow = new MainWindow();
         mainWindow.DataContext = mainWindowViewModel;

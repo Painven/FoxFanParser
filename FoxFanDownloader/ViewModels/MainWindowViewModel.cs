@@ -1,13 +1,12 @@
-﻿using FoxFanDownloader.Models;
+﻿using AutoMapper;
 using FoxFanDownloader.Views;
-using Newtonsoft.Json;
+using FoxFanDownloaderCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using ToastNotifications;
 using ToastNotifications.Messages;
@@ -17,6 +16,7 @@ namespace FoxFanDownloader.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private readonly ISettingsStorage settingsStorage;
+    private readonly IMapper mapper;
     private readonly CartoonUpdatesChecker updatesChecker;
     private readonly Notifier toasts;
     private readonly FoxFanParser parser;
@@ -45,24 +45,26 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand CheckUpdatesForAllCatoonsCommand { get; }
 
     bool inProgress;
-    
+
     public bool InProgress
     {
         get => inProgress;
         set => Set(ref inProgress, value);
     }
-    
-    public MainWindowViewModel(FoxFanParser parser, 
-        ISettingsStorage settingsStorage, 
+
+    public MainWindowViewModel(FoxFanParser parser,
+        ISettingsStorage settingsStorage,
+        IMapper mapper,
         CartoonUpdatesChecker updatesChecker,
         Notifier toasts) : this()
-    {      
+    {
         this.settingsStorage = settingsStorage;
+        this.mapper = mapper;
         this.updatesChecker = updatesChecker;
         this.toasts = toasts;
         this.parser = parser;
     }
-    
+
     public MainWindowViewModel()
     {
         AddNewCartoonCommand = new LambdaCommand(AddNewCartoon, e => !InProgress);
@@ -72,25 +74,37 @@ public class MainWindowViewModel : ViewModelBase
 
     private async Task Loaded(string activeCartoonName = null)
     {
-        Cartoons.Clear();
-        var cartoons = await Task.Run(() => settingsStorage.LoadCartoons());
-        cartoons.ToList().ForEach(c => Cartoons.Add(c));
 
-        var allSeries = cartoons.SelectMany(c => c.SeasonsInfo.Seasons).SelectMany(s => s.Series);
-        foreach (var series in allSeries)
+        try
         {
-            series.OpenVideoClicked += async (e) => VLC_Helper.OpenVideo(await parser.GetSourceVideoFromUri(e.Uri), true);
-        }     
-        
-        foreach(var cartoon in cartoons)
-        {
-            cartoon.SeasonsInfo.OnRefresSeasonsClick += async () => await SeasonsInfo_OnRefresSeasonsClick(cartoon);
+            Cartoons.Clear();
+            var cartoons = mapper.Map<IEnumerable<Cartoon>>(await Task.Run(() => settingsStorage.LoadCartoons()));
+            cartoons.ToList().ForEach(c => Cartoons.Add(c));
+
+            var allSeries = cartoons.SelectMany(c => c.SeasonsInfo.Seasons).SelectMany(s => s.Series);
+            foreach (var series in allSeries)
+            {
+                series.OpenVideoClicked += async (e) =>
+                {
+                    VLC_Helper.OpenVideo(await parser.GetSourceVideoFromUri(e.Uri), true);
+                };
+            }
+
+            foreach (var cartoon in cartoons)
+            {
+                cartoon.SeasonsInfo.OnRefresSeasonsClick += async () => await SeasonsInfo_OnRefresSeasonsClick(cartoon);
+            }
+
+            if (activeCartoonName != null)
+            {
+                SelectedMultfilm = Cartoons.FirstOrDefault(c => c.Name.Equals(activeCartoonName));
+                SelectedMultfilm.SeasonsInfo.SelectLastSeason();
+            }
+
         }
-
-        if(activeCartoonName != null)
+        catch (Exception ex)
         {
-            SelectedMultfilm = Cartoons.FirstOrDefault(c => c.Name.Equals(activeCartoonName));
-            SelectedMultfilm.SeasonsInfo.SelectLastSeason();
+            toasts.ShowError("Ошибка загрузки: " + ex.Message);
         }
     }
 
@@ -100,7 +114,7 @@ public class MainWindowViewModel : ViewModelBase
         cartoon.SeasonsInfo.IsRefreshInProgress = true;
         try
         {
-            var hasUpdates = await updatesChecker.CheckUpdatesAndSave(cartoon);
+            var hasUpdates = await updatesChecker.CheckUpdatesAndSave(mapper.Map<CartoonModel>(cartoon));
             if (hasUpdates)
             {
                 await Loaded(cartoon.Name);
@@ -121,31 +135,41 @@ public class MainWindowViewModel : ViewModelBase
     private async Task CheckUpdatesForAllCatoons()
     {
         InProgress = true;
-
-        var tasks = Cartoons.Select(c => updatesChecker.CheckUpdatesAndSave(c)).ToArray();
-        var updateResults = await Task.WhenAll(tasks);
-        var cartoonsWithUpdates = Cartoons.Where((c, index) => updateResults[index]).Select(c => c.Name).ToArray();
-
-        if (cartoonsWithUpdates.Length > 1)
+        try
         {
-            toasts.ShowSuccess($"Найдены новые серии для сериалов {string.Join(", ", cartoonsWithUpdates)}");           
-        } 
-        else if(cartoonsWithUpdates.Length == 1)
-        {
-            toasts.ShowSuccess($"Найдены новые серии у сериала '{cartoonsWithUpdates[0]}'");
+            var cartoonsWithUpdates = await updatesChecker.CheckUpdatesAndSave(mapper.Map<IEnumerable<CartoonModel>>(Cartoons));
+
+            if (cartoonsWithUpdates.Length > 1)
+            {
+                toasts.ShowSuccess($"Найдены новые серии для сериалов {string.Join(", ", cartoonsWithUpdates)}");
+            }
+            else if (cartoonsWithUpdates.Length == 1)
+            {
+                toasts.ShowSuccess($"Найдены новые серии у сериала '{cartoonsWithUpdates.First()}'");
+            }
+            else
+            {
+                toasts.ShowInformation("Новых серий нет");
+            }
+
         }
-        else
+
+        catch (Exception ex)
         {
-            toasts.ShowInformation("Новых серий нет");
+            toasts.ShowError("Ошибка загрузки: " + ex.Message);
+        }
+        finally
+        {
+            InProgress = false;
         }
 
-        InProgress = false;
+
 
     }
 
     private async void AddNewCartoon(object obj)
     {
-        var dialogVM = new AddNewCartoonSourceWindowViewModel(this, parser, settingsStorage);
+        var dialogVM = new AddNewCartoonSourceWindowViewModel(this, parser, settingsStorage, mapper);
         var dialog = new AddNewCartoonSourceWindow();
         dialog.DataContext = dialogVM;
         if (dialog.ShowDialog() == true)

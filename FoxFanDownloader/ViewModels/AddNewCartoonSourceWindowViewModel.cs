@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AutoMapper;
+using FoxFanDownloaderCore;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ public class AddNewCartoonSourceWindowViewModel : ViewModelBase
     private readonly MainWindowViewModel mainWindow;
     private readonly FoxFanParser parser;
     private readonly ISettingsStorage settingsStorage;
+    private readonly IMapper mapper;
 
     public ObservableCollection<Cartoon> AllCartoonsExcludeAdded { get; set; } = new();
 
@@ -32,13 +35,17 @@ public class AddNewCartoonSourceWindowViewModel : ViewModelBase
     public ICommand AddNewCartoonCommand { get; }
     public ICommand LoadedCommand { get; }
 
-    public AddNewCartoonSourceWindowViewModel(MainWindowViewModel mainWindow, FoxFanParser parser, ISettingsStorage settingsStorage) 
+    public AddNewCartoonSourceWindowViewModel(MainWindowViewModel mainWindow,
+        FoxFanParser parser,
+        ISettingsStorage settingsStorage,
+        IMapper mapper)
     {
         AddNewCartoonCommand = new LambdaCommand(async e => await AddNew(e), e => SelectedCartoon != null && !ParsingInProgress);
         LoadedCommand = new LambdaCommand(async e => await Loaded());
         this.mainWindow = mainWindow;
         this.parser = parser;
         this.settingsStorage = settingsStorage;
+        this.mapper = mapper;
     }
 
     private async Task Loaded()
@@ -48,7 +55,7 @@ public class AddNewCartoonSourceWindowViewModel : ViewModelBase
         {
             if (mainWindow.Cartoons.FirstOrDefault(c => c.Uri == cartoon.Uri) == null)
             {
-                AllCartoonsExcludeAdded.Add(cartoon);
+                AllCartoonsExcludeAdded.Add(mapper.Map<Cartoon>(cartoon));
             }
         }
     }
@@ -58,11 +65,14 @@ public class AddNewCartoonSourceWindowViewModel : ViewModelBase
         ParsingInProgress = true;
         try
         {
-            var newCartoon = await parser.Parse(SelectedCartoon.Name, SelectedCartoon.Uri);
+            var cartoonModel = await parser.Parse(SelectedCartoon.Name, SelectedCartoon.Uri);
+            settingsStorage.SaveCartoon(cartoonModel);
+
+            var newCartoon = mapper.Map<Cartoon>(cartoonModel);
             SelectedCartoon = newCartoon;
-            settingsStorage.SaveCartoon(newCartoon);
+
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ParsingInProgress = false;
             MessageBox.Show("Ошибка парсинга: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -72,6 +82,6 @@ public class AddNewCartoonSourceWindowViewModel : ViewModelBase
             (window as Window).DialogResult = true;
             ParsingInProgress = false;
         }
-             
+
     }
 }

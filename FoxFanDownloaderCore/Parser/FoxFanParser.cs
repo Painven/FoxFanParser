@@ -1,18 +1,10 @@
-﻿using FoxFanDownloader.ViewModels;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace FoxFanDownloader;
+namespace FoxFanDownloaderCore;
 
-public class FoxFanParser
+public partial class FoxFanParser
 {
     private readonly HttpClient client;
 
@@ -21,14 +13,14 @@ public class FoxFanParser
         client = new HttpClient();
     }
 
-    public async Task<Cartoon> Parse(string name, string host)
+    public async Task<CartoonModel> Parse(string name, string host)
     {
-        var cartoon = new Cartoon();
-
-        cartoon.Name = name;
-        cartoon.Uri = host;
-        cartoon.SeasonsInfo = new SeasonsInfo();
-
+        var cartoon = new CartoonModel()
+        {
+            Name = name,
+            Uri = host,
+            SeasonsInfo = new SeasonsInfoModel()
+        };
         int lastSeasonNumber = await GetLastSeasonNumberForCartoon(host);
 
         for (int i = lastSeasonNumber; i >= 1; i--)
@@ -52,28 +44,28 @@ public class FoxFanParser
         return lastSeasonNumber;
     }
 
-    public async Task<Season> ParseSeason(string host, int current_season)
+    public async Task<SeasonModel> ParseSeason(string host, int current_season)
     {
         var html = await client.GetStringAsync($"{host}/season.php?id={current_season}");
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
-        var season = new Season()
+        var season = new SeasonModel()
         {
             Number = current_season.ToString(),
-            Series = new ObservableCollection<Series>(doc.DocumentNode.SelectNodes("//td[1]/a[contains(@href, 'series.php')]")
-                    .Select((a, number) => new Series()
+            Series = doc.DocumentNode.SelectNodes("//td[1]/a[contains(@href, 'series.php')]")
+                    .Select((a, number) => new SeriesModel()
                     {
                         Title = Regex.Match(a.GetAttributeValue("title", null), @"^(.*?)\((.*?)\)(.*)$").Groups[2].Value,
-                        Uri = host + "/" +  a.GetAttributeValue("href", null),
-                        Image = host + "/" +  a.SelectSingleNode(".//img")?.GetAttributeValue("src", null),
+                        Uri = host + "/" + a.GetAttributeValue("href", null),
+                        Image = host + "/" + a.SelectSingleNode(".//img")?.GetAttributeValue("src", null),
                         Number = (number + 1).ToString()
-                    }))
+                    }).ToArray()
         };
 
-        return season;     
+        return season;
     }
-    
+
     public async Task<PlayerJsonRoot> GetSourceVideoFromUri(string uri)
     {
         var client = new HttpClient();
@@ -107,8 +99,8 @@ public class FoxFanParser
 
         return null;
     }
-    
-    public async Task<Cartoon[]> GetCartoonList()
+
+    public async Task<CartoonModel[]> GetCartoonList()
     {
         const string HOST = "https://mult.love/";
         const string pattern = @"^Смотреть «(.*?)» \((.*?)\) онлайн на (.*?)$";
@@ -118,7 +110,7 @@ public class FoxFanParser
         doc.LoadHtml(str);
 
         var cartoonItems = doc.DocumentNode.SelectNodes("//div[@id='links']/ul/li")
-            .Select(li => new Cartoon()
+            .Select(li => new CartoonModel()
             {
                 Name = Regex.Match(li.SelectSingleNode(".//img").GetAttributeValue("alt", null), pattern).Groups[2].Value,
                 Image = HOST + li.SelectSingleNode(".//img").GetAttributeValue("src", null),
@@ -126,14 +118,5 @@ public class FoxFanParser
             }).ToArray();
 
         return cartoonItems;
-    }
-    
-    public class PlayerJsonRoot
-    {
-        public string id { get; set; }
-        public string file { get; set; }
-        public string comment { get; set; }
-        public string poster { get; set; }
-        public string subtitle { get; set; }
     }
 }

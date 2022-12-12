@@ -1,6 +1,6 @@
-﻿namespace FoxFanDownloader;
+﻿namespace FoxFanDownloaderCore;
 
-public record SeriesDto
+public record SeriesModel
 {
     public string Title { get; init; }
     public string Image { get; init; }

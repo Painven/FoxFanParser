@@ -1,12 +1,12 @@
-﻿namespace FoxFanDownloader;
+﻿namespace FoxFanDownloaderCore;
 
-public record CartoonDto
+public record CartoonModel
 {
     public string Name { get; init; }
     public string Uri { get; init; }
     public string Image { get; init; }
 
-    public SeasonsInfoDto SeasonsInfo { get; init; }
+    public SeasonsInfoModel SeasonsInfo { get; init; }
 }
 
 

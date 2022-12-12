@@ -8,13 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\bg-texture-original-opacity85.jpg" />
     <None Remove="Assets\cartoon-texture-1.jpg" />
     <None Remove="Assets\ff-texture-2.jpg" />
+    <None Remove="Assets\snowflake-1.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.11.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -23,11 +24,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FoxFanDownloaderCore\FoxFanDownloaderCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\bg-texture-original-opacity85.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\cartoon-texture-1.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\ff-texture-2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\snowflake-1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

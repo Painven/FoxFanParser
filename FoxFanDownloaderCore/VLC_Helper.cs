@@ -1,24 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using static FoxFanDownloader.FoxFanParser;
+using static FoxFanDownloaderCore.FoxFanParser;
 
-namespace FoxFanDownloader;
+namespace FoxFanDownloaderCore;
 
 public static class VLC_Helper
 {
-    
+    static readonly string workDirectory;
+
+    static VLC_Helper()
+    {
+        workDirectory = Path.GetDirectoryName(typeof(VLC_Helper).Assembly.Location) + "\\subtitles";
+    }
+
 
     public static async Task OpenVideo(PlayerJsonRoot data, bool transformSubtitlesToOneLine)
     {
         if (data == null) { return; }
-        
+
         string exePath = @"C:\Program Files\VideoLAN\VLC\vlc.exe";
         string subtitleFileName = Path.GetFileName(data.subtitle);
-        string workDirectory = Path.GetDirectoryName(App.Current.GetType().Assembly.Location) + "\\subtitles";
         string localSutitlesFile = Path.Combine(workDirectory, subtitleFileName);
         string command = $"-vvv \"{data.file}\" --sub-file \"{subtitleFileName}\"";
 
@@ -26,7 +27,7 @@ public static class VLC_Helper
 
         var process = new ProcessStartInfo(exePath, command);
         process.WorkingDirectory = workDirectory;
-        Process.Start(process);      
+        Process.Start(process);
     }
 
     private static async Task LoadSubtitles(string dir, string remoteUri, string localPath, bool transformSubtitlesToOneLine)
@@ -39,14 +40,14 @@ public static class VLC_Helper
         await (new WebClient()).DownloadFileTaskAsync(remoteUri, localPath);
 
         if (transformSubtitlesToOneLine)
-        {        
+        {
             var sourceLines = File.ReadAllLines(localPath);
             var newLines = new List<string>();
 
             bool isPreviousLineHasData = false;
-            foreach(var line in sourceLines)
+            foreach (var line in sourceLines)
             {
-                if(line.Contains(" --> "))
+                if (line.Contains(" --> "))
                 {
                     if (isPreviousLineHasData)
                     {
@@ -70,8 +71,8 @@ public static class VLC_Helper
                     {
                         newLines.Add(line);
                         isPreviousLineHasData = true;
-                    }                   
-                }               
+                    }
+                }
             }
 
             await File.WriteAllLinesAsync(localPath, newLines);
